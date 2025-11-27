@@ -4,8 +4,8 @@ A RESTful API built with Node.js, Express, and MongoDB for managing a personal p
 
 ## Live URLs
 
-- **API URL**: [Your deployed API URL]
-- **Frontend URL**: [Your deployed frontend URL]
+- **API URL**: https://portfolio-api-steel.vercel.app
+- **Frontend URL**: https://portfolio-frontend-one-mu.vercel.app
 
 ## Features
 
@@ -25,59 +25,78 @@ A RESTful API built with Node.js, Express, and MongoDB for managing a personal p
 
 ## API Endpoints
 
+### Root
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/` | API info and available endpoints |
+
 ### Users
-| Method | Endpoint | Description | Access |
-|--------|----------|-------------|--------|
-| POST | `/api/users/register` | Register new user | Public |
-| POST | `/api/users/login` | Login user | Public |
-| GET | `/api/users/me` | Get current user | Private |
+| Method | Endpoint | Description | Access | Request Body |
+|--------|----------|-------------|--------|--------------|
+| POST | `/api/users/register` | Register new user | Public | `{ username, email, password }` |
+| POST | `/api/users/login` | Login user | Public | `{ email, password }` |
+| GET | `/api/users/me` | Get current user | Private | - |
 
 ### Projects
-| Method | Endpoint | Description | Access |
-|--------|----------|-------------|--------|
-| GET | `/api/projects` | Get all projects | Public |
-| GET | `/api/projects/:id` | Get single project | Public |
-| POST | `/api/projects` | Create project | Private |
-| PUT | `/api/projects/:id` | Update project | Private |
-| DELETE | `/api/projects/:id` | Delete project | Private |
+| Method | Endpoint | Description | Access | Request Body |
+|--------|----------|-------------|--------|--------------|
+| GET | `/api/projects` | Get all projects | Public | - |
+| GET | `/api/projects/:id` | Get single project | Public | - |
+| POST | `/api/projects` | Create project | Private | `{ title, description, imageUrl, repoUrl, liveUrl, technologies }` |
+| PUT | `/api/projects/:id` | Update project | Private | `{ title, description, imageUrl, repoUrl, liveUrl, technologies }` |
+| DELETE | `/api/projects/:id` | Delete project | Private | - |
 
 ### Blog Posts
-| Method | Endpoint | Description | Access |
-|--------|----------|-------------|--------|
-| GET | `/api/blog` | Get all posts | Public |
-| GET | `/api/blog/:id` | Get single post with comments | Public |
-| POST | `/api/blog` | Create post | Private |
-| PUT | `/api/blog/:id` | Update post (author only) | Private |
-| DELETE | `/api/blog/:id` | Delete post (author only) | Private |
+| Method | Endpoint | Description | Access | Request Body |
+|--------|----------|-------------|--------|--------------|
+| GET | `/api/blog` | Get all posts | Public | - |
+| GET | `/api/blog/:id` | Get single post with comments | Public | - |
+| POST | `/api/blog` | Create post | Private | `{ title, content, tags }` |
+| PUT | `/api/blog/:id` | Update post (author only) | Private | `{ title, content, tags }` |
+| DELETE | `/api/blog/:id` | Delete post (author only) | Private | - |
 
 ### Comments
-| Method | Endpoint | Description | Access |
-|--------|----------|-------------|--------|
-| GET | `/api/blog/:postId/comments` | Get comments for post | Public |
-| POST | `/api/blog/:postId/comments` | Create comment | Private |
+| Method | Endpoint | Description | Access | Request Body |
+|--------|----------|-------------|--------|--------------|
+| GET | `/api/blog/:postId/comments` | Get comments for post | Public | - |
+| POST | `/api/blog/:postId/comments` | Create comment | Private | `{ content }` |
 
 ### Contact
-| Method | Endpoint | Description | Access |
-|--------|----------|-------------|--------|
-| POST | `/api/contact` | Send contact message | Public |
-| GET | `/api/contact` | Get all messages | Private |
-| PUT | `/api/contact/:id/read` | Mark as read | Private |
-| DELETE | `/api/contact/:id` | Delete message | Private |
+| Method | Endpoint | Description | Access | Request Body |
+|--------|----------|-------------|--------|--------------|
+| POST | `/api/contact` | Send contact message | Public | `{ name, email, message }` |
+| GET | `/api/contact` | Get all messages | Private | - |
+| PUT | `/api/contact/:id/read` | Mark as read | Private | - |
+| DELETE | `/api/contact/:id` | Delete message | Private | - |
 
-## Installation
+## Getting Started
 
-1. Clone the repository
+### Prerequisites
+
+- Node.js (v16 or higher)
+- MongoDB database (local or MongoDB Atlas)
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/ChenYiqi-17/portfolio-api.git
+   cd portfolio-api
+   ```
+
 2. Install dependencies:
    ```bash
    npm install
    ```
+
 3. Create `.env` file with:
-   ```
+   ```env
    PORT=5000
    MONGODB_URI=your_mongodb_connection_string
    JWT_SECRET=your_jwt_secret
    NODE_ENV=development
    ```
+
 4. Run the server:
    ```bash
    npm start
@@ -88,8 +107,10 @@ A RESTful API built with Node.js, Express, and MongoDB for managing a personal p
 ## Request Examples
 
 ### Register User
-```json
+```http
 POST /api/users/register
+Content-Type: application/json
+
 {
   "username": "johndoe",
   "email": "john@example.com",
@@ -98,18 +119,34 @@ POST /api/users/register
 ```
 
 ### Login User
-```json
+```http
 POST /api/users/login
+Content-Type: application/json
+
 {
   "email": "john@example.com",
   "password": "password123"
 }
 ```
 
-### Create Project (Protected)
+**Response:**
 ```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "_id": "...",
+    "username": "johndoe",
+    "email": "john@example.com"
+  }
+}
+```
+
+### Create Project (Protected)
+```http
 POST /api/projects
-Headers: { "Authorization": "Bearer <token>" }
+Content-Type: application/json
+Authorization: Bearer <token>
+
 {
   "title": "My Awesome Project",
   "description": "A cool project I built",
@@ -121,9 +158,11 @@ Headers: { "Authorization": "Bearer <token>" }
 ```
 
 ### Create Blog Post (Protected)
-```json
+```http
 POST /api/blog
-Headers: { "Authorization": "Bearer <token>" }
+Content-Type: application/json
+Authorization: Bearer <token>
+
 {
   "title": "My First Blog Post",
   "content": "This is the content of my blog post...",
@@ -132,14 +171,42 @@ Headers: { "Authorization": "Bearer <token>" }
 ```
 
 ### Send Contact Message
-```json
+```http
 POST /api/contact
+Content-Type: application/json
+
 {
   "name": "Jane Doe",
   "email": "jane@example.com",
   "message": "Hello, I would like to connect!"
 }
 ```
+
+## Authentication
+
+Protected routes require a JWT token in the Authorization header:
+```
+Authorization: Bearer <your_jwt_token>
+```
+
+Obtain a token by logging in via `/api/users/login`.
+
+## Error Handling
+
+The API returns consistent error responses:
+```json
+{
+  "error": "Error message description"
+}
+```
+
+Common HTTP status codes:
+- `200` - Success
+- `201` - Created
+- `400` - Bad Request
+- `401` - Unauthorized
+- `404` - Not Found
+- `500` - Server Error
 
 ## License
 
