@@ -17,7 +17,20 @@ const errorHandler = require('./middleware/errorHandler');
 
 // Middleware
 app.use(helmet());
-app.use(cors());
+
+// CORS configuration for cross-origin requests
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    // Allow all origins for now (in production, specify your frontend domain)
+    return callback(null, true);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // MongoDB Connection
@@ -57,3 +70,6 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
+
+// Export for Vercel
+module.exports = app;
